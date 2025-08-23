@@ -266,6 +266,84 @@ export default function Dashboard() {
           <p className="text-2xl font-bold text-gray-600">MEDTALK</p>
         </div>
 
+
+
+        {/* Global Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          {/* Grand Total Hits */}
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex items-center">
+              <div className="p-3 rounded-full bg-blue-100">
+                <svg className="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Total Reports Generated</p>
+                <p className="text-2xl font-bold text-gray-900">{(globalStats?.totalHits || 0).toLocaleString()}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* All Time Users */}
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex items-center">
+              <div className="p-3 rounded-full bg-green-100">
+                <svg className="h-5 w-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Total Unique Users</p>
+                <p className="text-2xl font-bold text-gray-900">{(globalStats?.uniqueUsers || 0).toLocaleString()}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Total Countries */}
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="flex items-center">
+              <div className="p-3 rounded-full bg-purple-100">
+                <svg className="h-5 w-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Total Countries</p>
+                <p className="text-2xl font-bold text-gray-900">{globalStats?.uniqueCountries || 0}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Filterable Data Section */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">Filterable Data Analysis</h2>
+              <p className="text-sm text-gray-600 mt-1">
+                {startDate && endDate 
+                  ? `Showing data from ${format(new Date(startDate), 'MMM dd, yyyy')} to ${format(new Date(endDate), 'MMM dd, yyyy')}`
+                  : startDate 
+                    ? `Showing data from ${format(new Date(startDate), 'MMM dd, yyyy')} onwards`
+                    : endDate
+                      ? `Showing data up to ${format(new Date(endDate), 'MMM dd, yyyy')}`
+                      : 'Showing data for last 15 days'
+                }
+              </p>
+            </div>
+            {(startDate || endDate) && (
+              <button
+                onClick={clearDateFilter}
+                className="px-3 py-1 text-sm text-red-600 hover:text-red-800 transition-colors border border-red-200 rounded-md hover:bg-red-50"
+              >
+                Clear All Filters
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Search and Filter Bar */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
           <div className="space-y-4">
@@ -334,7 +412,7 @@ export default function Dashboard() {
 
             {/* Date Range Picker */}
             {showDateFilter && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
                   <input
@@ -359,8 +437,23 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-end">
                   <div className="text-sm text-gray-600">
-                    <p>Data Range:</p>
+                    <p>Available Data Range:</p>
                     <p>{format(dateRange.minDate, 'MMM dd, yyyy')} - {format(dateRange.maxDate, 'MMM dd, yyyy')}</p>
+                  </div>
+                </div>
+                <div className="flex items-end">
+                  <div className="text-sm text-gray-600">
+                    <p>Selected Date Range:</p>
+                    <p className="font-medium text-blue-600">
+                      {startDate && endDate 
+                        ? `${format(new Date(startDate), 'MMM dd, yyyy')} - ${format(new Date(endDate), 'MMM dd, yyyy')}`
+                        : startDate 
+                          ? `${format(new Date(startDate), 'MMM dd, yyyy')} - Select end date`
+                          : endDate
+                            ? `Select start date - ${format(new Date(endDate), 'MMM dd, yyyy')}`
+                            : 'Select start and end dates'
+                      }
+                    </p>
                   </div>
                 </div>
               </div>
@@ -368,58 +461,9 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Global Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          {/* Grand Total Hits */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center">
-              <div className="p-3 rounded-full bg-blue-100">
-                <svg className="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Grand Total Hits</p>
-                <p className="text-2xl font-bold text-gray-900">{(globalStats?.totalHits || 0).toLocaleString()}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* All Time Users */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center">
-              <div className="p-3 rounded-full bg-green-100">
-                <svg className="h-5 w-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">All Time Users</p>
-                <p className="text-2xl font-bold text-gray-900">{(globalStats?.uniqueUsers || 0).toLocaleString()}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Total Countries */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center">
-              <div className="p-3 rounded-full bg-purple-100">
-                <svg className="h-5 w-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Countries</p>
-                <p className="text-2xl font-bold text-gray-900">{globalStats?.uniqueCountries || 0}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Filtered Stats Cards */}
+        {/* Filtered Data Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Filtered Total Hits */}
+          {/* Total Page Views */}
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center">
               <div className="p-3 rounded-full bg-orange-100">
@@ -428,13 +472,13 @@ export default function Dashboard() {
                 </svg>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Filtered Hits</p>
+                <p className="text-sm font-medium text-gray-600">Page Views</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.totalHits.toLocaleString()}</p>
               </div>
             </div>
           </div>
 
-          {/* Filtered Unique Countries */}
+          {/* Geographic Reach */}
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center">
               <div className="p-3 rounded-full bg-teal-100">
@@ -444,13 +488,13 @@ export default function Dashboard() {
                 </svg>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Filtered Countries</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.uniqueCountries}</p>
+                <p className="text-sm font-medium text-gray-600">Geographic Reach</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.uniqueCountries} Countries</p>
               </div>
             </div>
           </div>
 
-          {/* Filtered User Count */}
+          {/* Unique Visitors */}
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center">
               <div className="p-3 rounded-full bg-indigo-100">
@@ -459,7 +503,7 @@ export default function Dashboard() {
                 </svg>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Filtered Users</p>
+                <p className="text-sm font-medium text-gray-600">Unique Visitors</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.uniqueIPs.toLocaleString()}</p>
               </div>
             </div>
